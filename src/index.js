@@ -1,33 +1,33 @@
 import { Cluster } from "puppeteer-cluster";
-import { Puppeteer } from "puppeteer";
 
+async function classify(url = "", data = { "href": [], "title": [] }) {
+  let exteralLink = [];
+  let interalLink = [];
+  
+  if (url.endsWith("/", url.length)) {
+    url = url.substring(0, url.length - 1);
+  }
+  
+  data.href.forEach( (i,index)=>{
+    if (!i.includes(url)) {
+      let u = ["/app", "/p", "/var", "/index.php"];
+      for (let j of u) {
 
-function classify(url, data = { "href": ["", "", ""], "title": ["", "", ""] }) {
-  data.href.forEach(i => {
-    //console.log("I : ", i);
-    if (i.includes(url)) { 
-      //console.log("Include : ",i)
-    }
-    else {
-      if(i.includes("http")){
-        return;
-      }
-      let u = ["/app","/p","/var"];
-      for(let j of u){
-        
-        if(i.startsWith(j,0)){
-          //console.log("In : ",i)
-          i=i.replace(j,url+j)
+        if (i.startsWith(j, 0)) {
+          i = i.replace(j, url + j)
         }
       }
-
-      console.log("include2 : ",i)
-      if(i.startsWith("/app",0)){
-        
-      }
-      
     }
-  })
+    if (i.startsWith(url, 0)) {
+      console.log(i)
+      interalLink.push(i);
+    }
+    else {
+      exteralLink.push(i);
+    }
+  });
+  
+
 }
 
 
@@ -40,28 +40,18 @@ function classify(url, data = { "href": ["", "", ""], "title": ["", "", ""] }) {
   await cluster.task(async ({ page, data: url }) => {
     await page.goto(url);
     const screen = await page.screenshot();
-    let data = await page.evaluate(
-      () => {
-        let href = Array.from(document.querySelectorAll('a'), a => a.getAttribute('href'))
-        let content = Array.from(document.querySelectorAll('a'), a => a.textContent)
+    let data = await page.evaluate(() => {
+      let href = Array.from(document.querySelectorAll('a'), a => a.getAttribute('href'));
+      let content = Array.from(document.querySelectorAll('a'), a => a.textContent);
+      return {"href": href,"title": content}
+    });
 
-        data = {
-          "href": href,
-          "title": content
-        }
-
-        return data;
-      }
-    );
-
-    //console.log('title', data.href.length)
-    classify("https://www.nptu.edu.tw", data);
-
+    //classify(url, data);
 
   });
 
 
-  cluster.queue('https://www.nptu.edu.tw');
+  cluster.queue('https://www.nptu.edu.tw/');
   //cluster.queue('http://www.wikipedia.org/');
   // many more pages
 
