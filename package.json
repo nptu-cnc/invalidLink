@@ -17,6 +17,7 @@
     "babel-plugin-module-resolver": "^4.1.0"
   },
   "dependencies": {
+    "axios": "^0.27.2",
     "chromium": "^3.0.3",
     "fs": "0.0.1-security",
     "moment": "^2.29.3",
