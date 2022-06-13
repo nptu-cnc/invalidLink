@@ -16,53 +16,58 @@ let index = 0;
 
   let cluster = await Cluster.launch({
     concurrency: Cluster.CONCURRENCY_CONTEXT,
-    maxConcurrency: 10,
+    maxConcurrency: 3,
     timeout: 5000,
     monitor: false,
+    puppeteerOptions:{
+      headless:true
+    }
   });
 
 
 
 
   await cluster.task(async ({ page, data: { url = "", layer = 0, from = "", root = "" } }) => {
+
     await page.goto(url, { waitUntil: "networkidle2" });
 
-    let data = await classify(url, await getInfo(page), root);
 
-    console.log(data.exteralLink)
+    let dataDic ={};
+    dataDic = await classify(url, await getInfo(page), root);
     queue.push(url);
+    
+    await page.close();
 
-    page.close();
-    checkURL(data.exteralLink.href, data.exteralLink.title, from);
-    checkURL(data.interalLink.href, data.interalLink.title, from);
-    checkURL(data.img,[], from);
-    //console.log(`Layer${layer} -> ${url} \nFrom -> ${from}`);
+    checkURL(dataDic.exteralLink.href, dataDic.exteralLink.content, from);
+    checkURL(dataDic.interalLink.href, dataDic.interalLink.content, from);
+    checkURL(dataDic.img,[], from);
+    console.log(`Layer${layer} -> ${url} \nFrom -> ${from}\n`);
     layer = layer - 1;
 
     if (layer == 0) return;
-    console.log("Hi")
-    for (let i of data.interalLink.href) {
+
+    for (let i of dataDic.interalLink.href) {
       for (let j of queue) {
         if (i != j) {
-          cluster.queue({ url: i, layer: layer, from: url, root });
-
+          await cluster.queue({ url: i, layer: layer, from: url, root });
         }
       }
     }
-
+    
+    //console.log("Helllo : ",queue)
+    console.log("End"); 
+    
   });
 
 
-  cluster.queue({ url: 'https://www.nptu.edu.tw/', layer: 2, root: 'https://www.nptu.edu.tw/' });
+  await cluster.queue({ url: 'https://cnc.nptu.edu.tw/', layer: 2, from:"https://cnc.nptu.edu.tw/", root: 'https://www.nptu.edu.tw/' });
 
 
   // many more pages
 
   await cluster.idle();
   await cluster.close();
-  for (let i of error) {
-    console.log(i);
-  }
+
 })();
 
 
@@ -79,12 +84,13 @@ let index = 0;
 
 
 async function getInfo(page) {
-  return await page.evaluate(() => {
+  
+  let rtn = await page.evaluate(() => {
     let href = Array.from(document.querySelectorAll('a'), a => a.getAttribute('href'));
-    let titleA = Array.from(document.querySelectorAll('a'), a => a.getAttribute('title'));
+    let titleA //= Array.from(document.querySelectorAll('a'), a => a.getAttribute('title'));
     let content = Array.from(document.querySelectorAll('a'), a => String(a.textContent).trim());
     let img = Array.from(document.querySelectorAll('img'), img => img.src)
-    let titleIMG = Array.from(document.querySelectorAll('img'), img => img.title)
+    let titleIMG //= Array.from(document.querySelectorAll('img'), img => img.title)
     return {
       "href": href,
       "content": content,
@@ -92,5 +98,7 @@ async function getInfo(page) {
       "titleA": titleA,
       "titleIMG": titleIMG
     }
+
   });
+  return rtn;
 }

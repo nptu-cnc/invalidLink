@@ -1,5 +1,7 @@
-export default async function classify(url = "", data = { "href": [], "title": [], 'img': [], "titleA":[], "titleIMG":[] }, root = "") {
+export default async function classify(url = "", data = { "href": [], "content": [], 'img': [], "titleA":[], "titleIMG":[] }, root = "") {
 
+  let titleIMG = data.titleIMG;
+  let titleA = data.titleA;
   let img = data.img;
   let exteralLink = { "href": [], "title": [] };
   let interalLink = { "href": [], "title": [] };
@@ -19,11 +21,8 @@ export default async function classify(url = "", data = { "href": [], "title": [
 
     if (data.href[i].includes('#')) continue;
     
-    if (data.href[i].includes("javascript:void(0)")) continue;
-    
     if(data.href[i].includes("?Plugin=mobile&Action=mobileads&ad")) continue;
 
-    if(data.href[i].includes("/app/authimg.php")) continue;
 
     if (!data.href[i].includes(url)) {
 
@@ -34,16 +33,19 @@ export default async function classify(url = "", data = { "href": [], "title": [
     }
 
 
-    if (data.href[i].startsWith(url, 0)) {
+    if (data.href[i].includes(url)) {
       interalLink.href.push(data.href[i]);
-      interalLink.title.push(data.title[i]);
+      interalLink.title.push(data.content[i]);
+      //console.log("-In : ",data.href[i])
     }
-    else {
+    if(!data.href[i].includes(url)){
+      //console.log("Out : ",data.href[i])
       exteralLink.href.push(data.href[i]);
-      exteralLink.title.push(data.title[i]);
+      exteralLink.title.push(data.content[i]);
     }
   }
-  console.log(data.titleA)
+
+
   return { interalLink, exteralLink, img, titleA, titleIMG }
 
 }
