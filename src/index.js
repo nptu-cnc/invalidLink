@@ -38,10 +38,11 @@ let index = 0;
     
     await page.close();
 
-    checkURL(dataDic.exteralLink.href, dataDic.exteralLink.content, from);
-    checkURL(dataDic.interalLink.href, dataDic.interalLink.content, from);
-    checkURL(dataDic.img,[], from);
-    console.log(`Layer${layer} -> ${url} \nFrom -> ${from}\n`);
+    checkURL(dataDic.exteralLink.href, dataDic.exteralLink.content, url);
+    checkURL(dataDic.interalLink.href, dataDic.interalLink.content, url);
+    checkURL(dataDic.img,[], url);
+
+    console.log(`Layer${layer} -> ${url} \nFrom -> ${from}\n` );
     layer = layer - 1;
 
     if (layer == 0) return;
@@ -54,13 +55,11 @@ let index = 0;
       }
     }
     
-    //console.log("Helllo : ",queue)
-    console.log("End"); 
     
   });
 
 
-  await cluster.queue({ url: 'https://cnc.nptu.edu.tw/', layer: 2, from:"https://cnc.nptu.edu.tw/", root: 'https://www.nptu.edu.tw/' });
+  await cluster.queue({ url: 'https://cnc.nptu.edu.tw/', layer: 2, from:"https://cnc.nptu.edu.tw/", root: 'https://cnc.nptu.edu.tw/' });
 
 
   // many more pages
@@ -87,10 +86,10 @@ async function getInfo(page) {
   
   let rtn = await page.evaluate(() => {
     let href = Array.from(document.querySelectorAll('a'), a => a.getAttribute('href'));
-    let titleA //= Array.from(document.querySelectorAll('a'), a => a.getAttribute('title'));
+    let titleA = Array.from(document.querySelectorAll('a'), a => a.getAttribute('title'));
     let content = Array.from(document.querySelectorAll('a'), a => String(a.textContent).trim());
     let img = Array.from(document.querySelectorAll('img'), img => img.src)
-    let titleIMG //= Array.from(document.querySelectorAll('img'), img => img.title)
+    let titleIMG = Array.from(document.querySelectorAll('img'), img => img.title)
     return {
       "href": href,
       "content": content,
