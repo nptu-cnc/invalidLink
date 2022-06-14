@@ -1,7 +1,7 @@
 import checkURL from "./checkURL.js";
 import { Cluster } from "puppeteer-cluster";
 import classify from './classify.js'
-
+import {Promise} from 'bluebird'
 
 let output = [['URL Source', 'URL', 'Title',"Content", 'Status', 'Redirect code']];
 
@@ -26,7 +26,7 @@ let index = 0;
 
 
 
-
+ 
   await cluster.task(async ({ page, data: { url = "", layer = 0, from = "", root = "" } }) => {
 
     await page.goto(url, { waitUntil: "networkidle2" });
@@ -38,9 +38,14 @@ let index = 0;
     
     await page.close();
 
-    checkURL(dataDic.exteralLink.href, dataDic.exteralLink.content, url);
-    checkURL(dataDic.interalLink.href, dataDic.interalLink.content, url);
-    checkURL(dataDic.img,[], url);
+    
+      checkURL(dataDic.exteralLink.href, dataDic.exteralLink.content, url)
+      checkURL(dataDic.interalLink.href, dataDic.interalLink.content, url)
+      checkURL(dataDic.img.href,dataDic.img.title, url)
+    
+     
+
+    
 
     console.log(`Layer${layer} -> ${url} \nFrom -> ${from}\n` );
     layer = layer - 1;
@@ -58,8 +63,8 @@ let index = 0;
     
   });
 
-
-  await cluster.queue({ url: 'https://cnc.nptu.edu.tw/', layer: 2, from:"https://cnc.nptu.edu.tw/", root: 'https://cnc.nptu.edu.tw/' });
+  let URLS="https://cnc.nptu.edu.tw/";
+  await cluster.queue({ url: URLS, layer: 2, from:URLS, root: URLS });
 
 
   // many more pages
