@@ -65,10 +65,11 @@ let index = 0;
 
   //This URLS can be an array and use for-loop to made it accessed every site you fill-in
   let URLS=["https://cnc.nptu.edu.tw/","https://www.nptu.edu.tw/","https://eng.nptu.edu.tw/"];
+ 
   for(let i of URLS){
     await cluster.queue({ url: i, layer: 2, from:i, root: i });
   }
-
+  
 
   // many more pages
 
