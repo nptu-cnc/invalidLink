@@ -63,8 +63,11 @@ let index = 0;
     
   });
 
-  let URLS="https://cnc.nptu.edu.tw/";
-  await cluster.queue({ url: URLS, layer: 2, from:URLS, root: URLS });
+  //This URLS can be an array and use for-loop to made it accessed every site you fill-in
+  let URLS=["https://cnc.nptu.edu.tw/","https://www.nptu.edu.tw/","https://eng.nptu.edu.tw/"];
+  for(let i of URLS){
+    await cluster.queue({ url: i, layer: 2, from:i, root: i });
+  }
 
 
   // many more pages

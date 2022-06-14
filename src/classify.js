@@ -18,7 +18,7 @@ export default async function classify(url = "", data = { "href": [], "content":
     if (data.href[i].includes('#')) continue;
     if (data.href[i].startsWith("mailto:")) continue;
     if (data.href[i].includes("?Plugin=mobile&Action=mobileads&ad")) continue;
-
+    if (data.href[i].includes("Action=mobileforgetpass"))continue;
 
     if (!data.href[i].includes(url)) {
 
