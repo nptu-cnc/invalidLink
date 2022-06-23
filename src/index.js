@@ -3,6 +3,9 @@ import { Cluster } from "puppeteer-cluster";
 import classify from './classify.js'
 import {Promise} from 'bluebird'
 
+
+import pup from 'puppeteer-core'
+
 let output = [['URL Source', 'URL', 'Title',"Content", 'Status', 'Redirect code']];
 
 let queue = [];
@@ -14,6 +17,7 @@ let error = [];
 let index = 0;
 (async () => {
 
+  
   let cluster = await Cluster.launch({
     concurrency: Cluster.CONCURRENCY_CONTEXT,
     maxConcurrency: 3,
@@ -64,11 +68,12 @@ let index = 0;
   });
 
   //This URLS can be an array and use for-loop to made it accessed every site you fill-in
-  let URLS=["https://cnc.nptu.edu.tw/","https://www.nptu.edu.tw/","https://eng.nptu.edu.tw/"];
- 
-  for(let i of URLS){
-    await cluster.queue({ url: i, layer: 2, from:i, root: i });
-  }
+  let URLS="https://eng.nptu.edu.tw/";
+  
+
+  
+    await cluster.queue({ url: URLS, layer: 2, from:URLS, root: URLS });
+  
   
 
   // many more pages
