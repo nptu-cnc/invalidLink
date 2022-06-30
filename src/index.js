@@ -2,8 +2,8 @@ import checkURL from "./checkURL.js";
 import { Cluster } from "puppeteer-cluster";
 import classify from './classify.js'
 import {Promise} from 'bluebird'
-
-
+import tet from "@test/test.js"
+//import tett from "./testfloder/test.js"
 import pup from 'puppeteer-core'
 
 let output = [['URL Source', 'URL', 'Title',"Content", 'Status', 'Redirect code']];
@@ -17,7 +17,7 @@ let error = [];
 let index = 0;
 (async () => {
 
-  
+  return
   let cluster = await Cluster.launch({
     concurrency: Cluster.CONCURRENCY_CONTEXT,
     maxConcurrency: 3,
